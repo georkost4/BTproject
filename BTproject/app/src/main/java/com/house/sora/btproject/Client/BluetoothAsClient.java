@@ -1,4 +1,4 @@
-package com.house.sora.btproject;
+package com.house.sora.btproject.Client;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -6,7 +6,6 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.UUID;
 
 /**
@@ -14,7 +13,7 @@ import java.util.UUID;
  */
 public class BluetoothAsClient extends Thread {
     private static final String MY_UUID = "f49beda8-1f8b-11e6-b6ba-3e1d05defe78";
-    private final BluetoothSocket mmSocket;
+    private static  BluetoothSocket mmSocket;
     private final BluetoothDevice mmDevice;
     private BluetoothAdapter mBluetoothAdapter;
 
@@ -52,25 +51,19 @@ public class BluetoothAsClient extends Thread {
         }
 
         // Do work to manage the connection (in a separate thread)
-        manageConnectedSocket(mmSocket);
+        manageConnection(mmSocket);
     }
 
-    private void manageConnectedSocket(BluetoothSocket mmSocket)
+    private void manageConnection(BluetoothSocket mmSocket)
     {
         BluetoothDevice device =  mmSocket.getRemoteDevice();
         Log.d("DEBUG",device.getName());
-        try
-        {
-            OutputStream os = mmSocket.getOutputStream();
-            os.write(5);
-            os.flush();
-            Log.d("DEBUG","Byte Send");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
     }
 
+    public static BluetoothSocket getSocket() {
+        return mmSocket;
+    }
 
     /** Will cancel an in-progress connection, and close the socket */
     public void cancel() {

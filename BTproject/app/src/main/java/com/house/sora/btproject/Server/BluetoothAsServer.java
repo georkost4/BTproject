@@ -1,4 +1,4 @@
-package com.house.sora.btproject;
+package com.house.sora.btproject.Server;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
@@ -16,6 +16,7 @@ public class BluetoothAsServer extends Thread
     private static final String MY_UUID = "f49beda8-1f8b-11e6-b6ba-3e1d05defe78";
     private final BluetoothServerSocket mmServerSocket;
     private  BluetoothAdapter mBluetoothAdapter;
+    private static BluetoothSocket socket = null;
 
     public BluetoothAsServer()
     {
@@ -34,7 +35,7 @@ public class BluetoothAsServer extends Thread
 
     public void run()
     {
-        BluetoothSocket socket = null;
+
         // Keep listening until exception occurs or a socket is returned
         while (true)
         {
@@ -60,18 +61,11 @@ public class BluetoothAsServer extends Thread
 
     private void manageConnectedSocket(BluetoothSocket socket)
     {
-        try
-        {
-            InputStream is = socket.getInputStream();
-            Log.d("Incoming", String.valueOf(is.read()));
-            is.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Log.d("DEBUG","manageConnectedSOCKET_SERVER");
     }
 
-    public BluetoothServerSocket getMmServerSocket() {
-        return mmServerSocket;
+    public static  BluetoothSocket getSocket() {
+        return socket;
     }
 
     /** Will cancel the listening socket, and cause the thread to finish */

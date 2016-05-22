@@ -2,6 +2,7 @@ package com.house.sora.btproject;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,13 +17,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.house.sora.btproject.Client.BluetoothAsClient;
+import com.house.sora.btproject.Client.IO_Stream_Controller_Client;
+import com.house.sora.btproject.Server.BluetoothAsServer;
+import com.house.sora.btproject.Server.IO_Stream_Controller_Server;
+
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "DEBUG";
     private static final int REQUEST_ENABLE_BT = 1453;
-    private Button btnFindDevices;
+    private Button btnFindDevices,btnSendData;
     private BluetoothAdapter btAdapter;
     private ArrayList<String> devicesList;
     private BroadcastReceiver mReceiver;
@@ -66,11 +74,52 @@ public class MainActivity extends AppCompatActivity {
                 btnFindDevicesClicked();
             }
         });
+        btnSendData = (Button) findViewById(R.id.btnSend);
+        btnSendData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendDataButtonClicked(v);
+            }
+        });
         devicesList = new ArrayList<>();
         builderSingle = new AlertDialog.Builder(MainActivity.this);
         arrayAdapter = new ArrayAdapter<String>( MainActivity.this, android.R.layout.select_dialog_singlechoice,devicesList);
         btDeviceList = new  ArrayList<BluetoothDevice>();
 
+    }
+
+    private void sendDataButtonClicked(View v)
+    {
+        IO_Stream_Controller_Client client = new IO_Stream_Controller_Client();
+        IO_Stream_Controller_Server server = new IO_Stream_Controller_Server();
+
+        InputStream client_input = client.getInpoutStream();
+        OutputStream client_output = client.getOutputStream();
+
+
+        Log.d("SendDataClick","So Far So good");
+        if(client_input != null)
+        {
+            Log.d("Client_INPUT","gg");
+        }
+        if(client_output != null )
+        {
+            Log.d("Client_OUTPUT","gg");
+        }
+
+
+        InputStream server_input = server.getInpoutStream();
+        OutputStream server_output = server.getOutputStream();
+
+        if(server_input != null)
+        {
+            Log.d("Server_INPUT","gg");
+
+        }
+        if(server_output != null)
+        {
+            Log.d("Server_OUTPUT","gg");
+        }
     }
 
 
@@ -127,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
                         BluetoothAsClient bluetoothAsClient = new BluetoothAsClient(btDeviceList.get(0));
                         bluetoothAsClient.start();
                         bluetoothAsServer.start();
+
                         btAdapter.cancelDiscovery();
                     }
                 });
