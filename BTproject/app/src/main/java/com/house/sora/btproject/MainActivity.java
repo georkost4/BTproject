@@ -1,0 +1,162 @@
+package com.house.sora.btproject;
+
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "DEBUG";
+    private static final int REQUEST_ENABLE_BT = 1453;
+    private Button btnFindDevices;
+    private BluetoothAdapter btAdapter;
+    private ArrayList<String> devicesList;
+    private BroadcastReceiver mReceiver;
+    private AlertDialog.Builder builderSingle;
+    private ArrayAdapter<String> arrayAdapter;
+    private ArrayList<BluetoothDevice> btDeviceList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        initialize();
+        setUpBluetooth();
+        dialogSetUp();
+        registerBroadCastReceiver();
+
+    }
+
+    private void setUpBluetooth()
+    {
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if(btAdapter != null)
+        {
+            if(!btAdapter.isEnabled())
+            {
+                Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBTIntent,REQUEST_ENABLE_BT);
+            }
+        }
+        else Log.d(TAG,"ggbb");
+
+    }
+
+    private void initialize() {
+        btnFindDevices = (Button) findViewById(R.id.btnFind);
+        btnFindDevices.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnFindDevicesClicked();
+            }
+        });
+        devicesList = new ArrayList<>();
+        builderSingle = new AlertDialog.Builder(MainActivity.this);
+        arrayAdapter = new ArrayAdapter<String>( MainActivity.this, android.R.layout.select_dialog_singlechoice,devicesList);
+        btDeviceList = new  ArrayList<BluetoothDevice>();
+
+    }
+
+
+    private void btnFindDevicesClicked()
+    {
+
+        builderSingle.show();
+
+        btAdapter.startDiscovery();
+
+
+
+
+
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK)
+        {
+            Log.d(TAG,"Well Played");
+        }
+        else Log.d(TAG,"Not Played");
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mReceiver);
+    }
+
+
+    public void dialogSetUp()
+    {
+
+        builderSingle.setTitle("Select One Device");
+
+        builderSingle.setNegativeButton("Cancel",new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+
+        builderSingle.setAdapter(arrayAdapter,new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        String strName = arrayAdapter.getItem(which);
+                        Toast.makeText(getApplicationContext(),"You clicked "+strName,Toast.LENGTH_LONG).show();
+                        BluetoothAsServer bluetoothAsServer = new BluetoothAsServer();
+                        BluetoothAsClient bluetoothAsClient = new BluetoothAsClient(btDeviceList.get(0));
+                        bluetoothAsClient.start();
+                        bluetoothAsServer.start();
+                        btAdapter.cancelDiscovery();
+                    }
+                });
+    }
+
+
+    public void registerBroadCastReceiver()
+    {
+        // Create a BroadcastReceiver for ACTION_FOUND
+        mReceiver= new BroadcastReceiver() {
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                // When discovery finds a device
+                if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    // Get the BluetoothDevice object from the Intent
+                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    // Add the name and address to an array adapter to show in a ListView
+                    if(!devicesList.contains(device.getName() + "\n/" + device.getAddress()))
+                    {
+                        devicesList.add(device.getName() + "\n" + device.getAddress());
+                        btDeviceList.add(device);
+                    }
+                    arrayAdapter.notifyDataSetChanged();
+                    Log.d(TAG,"added\n");
+                    Log.d(TAG,device.getName()+"\n"+device.getAddress());
+                }
+            }
+        };
+        // Register the BroadcastReceiver
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
+    }
+}
