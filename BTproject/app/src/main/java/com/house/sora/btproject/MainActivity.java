@@ -12,9 +12,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.StringBuilderPrinter;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.house.sora.btproject.Client.BluetoothAsClient;
@@ -22,8 +24,11 @@ import com.house.sora.btproject.Client.IO_Stream_Controller_Client;
 import com.house.sora.btproject.Server.BluetoothAsServer;
 import com.house.sora.btproject.Server.IO_Stream_Controller_Server;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog.Builder builderSingle;
     private ArrayAdapter<String> arrayAdapter;
     private ArrayList<BluetoothDevice> btDeviceList;
+    private EditText txtDataToSend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
         builderSingle = new AlertDialog.Builder(MainActivity.this);
         arrayAdapter = new ArrayAdapter<String>( MainActivity.this, android.R.layout.select_dialog_singlechoice,devicesList);
         btDeviceList = new  ArrayList<BluetoothDevice>();
+        txtDataToSend = (EditText) findViewById(R.id.txtDataToSend);
 
     }
 
@@ -101,10 +108,33 @@ public class MainActivity extends AppCompatActivity {
         if(client_input != null)
         {
             Log.d("Client_INPUT","gg");
+            InputStreamReader reader = new InputStreamReader(client_input);
+            StringBuilder builder = null;
+
+            try
+            {
+                while(builder.append(reader.read())!=null);
+                Log.d("Client_INPUT","Reading done");
+                Log.d("DataRead",builder.toString());
+            }
+            catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         if(client_output != null )
         {
             Log.d("Client_OUTPUT","gg");
+            OutputStreamWriter writer = new OutputStreamWriter(client_output);
+            String charr = String.valueOf(txtDataToSend.getText());
+            try {
+                writer.write(charr);
+                writer.flush();
+                Log.d("Client_OUTPUT","data send");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
         }
 
 
