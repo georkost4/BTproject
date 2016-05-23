@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
+import com.house.sora.btproject.Client.IO_Stream_Controller_Client;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
@@ -62,6 +64,7 @@ public class BluetoothAsServer extends Thread
     private void manageConnectedSocket(BluetoothSocket socket)
     {
         Log.d("DEBUG","manageConnectedSOCKET_SERVER");
+        new IO_Stream_Controller_Client().readData();
     }
 
     public static  BluetoothSocket getSocket() {

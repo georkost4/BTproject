@@ -64,7 +64,7 @@ public class BluetoothAsClient extends Thread {
         BluetoothDevice device =  mmSocket.getRemoteDevice();
         Log.d(TAG,"Connected to : "+device.getName());
 
-        MainActivity.startIncoming(mmSocket);
+        new IO_Stream_Controller_Client().readData();
 
     }
 

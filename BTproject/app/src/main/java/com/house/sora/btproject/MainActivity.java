@@ -198,7 +198,4 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
     }
 
-    public static void startIncoming(BluetoothSocket mmSocket) {
-        new readIncomingData_ASYNC(mmSocket).start();
-    }
 }
