@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "DEBUG";
     private static final int REQUEST_ENABLE_BT = 1453;
-    private Button btnFindDevices,btnSendData;
+    private Button btnFindDevices,btnSendData,btnCheckConnectivity;
     private BluetoothAdapter btAdapter;
     private ArrayList<String> devicesList;
     private BroadcastReceiver mReceiver;
@@ -88,6 +88,13 @@ public class MainActivity extends AppCompatActivity {
                 sendDataButtonClicked(v);
             }
         });
+        btnCheckConnectivity = (Button) findViewById(R.id.btnCheckConnectivity);
+        btnCheckConnectivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnCheckConnectivityClicked();
+            }
+        });
         devicesList = new ArrayList<>();
         builderSingle = new AlertDialog.Builder(MainActivity.this);
         arrayAdapter = new ArrayAdapter<String>( MainActivity.this, android.R.layout.select_dialog_singlechoice,devicesList);
@@ -96,64 +103,26 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    private void btnCheckConnectivityClicked()
+    {
+        String str  = String.valueOf(BluetoothAsClient.getSocket().isConnected());
+        Toast.makeText(this,str,Toast.LENGTH_LONG).show();   }
+
     private void sendDataButtonClicked(View v)
     {
         IO_Stream_Controller_Client client = new IO_Stream_Controller_Client();
         IO_Stream_Controller_Server server = new IO_Stream_Controller_Server();
 
-        InputStream client_input = client.getInpoutStream();
-        OutputStream client_output = client.getOutputStream();
+        client.sendData();
 
-
-        Log.d("SendDataClick","So Far So good");
-        if(client_input != null)
-        {
-            Log.d("Client_INPUT","gg");
-        }
-        if(client_output != null )
-        {
-            Log.d("Client_OUTPUT","gg");
-            OutputStreamWriter writer = new OutputStreamWriter(client_output);
-            String charr = String.valueOf(txtDataToSend.getText());
-            try {
-                writer.write(charr);
-                writer.flush();
-                Log.d("Client_OUTPUT","data send:"+charr);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-        }
-
-
-        InputStream server_input = server.getInpoutStream();
-        OutputStream server_output = server.getOutputStream();
-
-        if(server_input != null)
-        {
-            Log.d("Server_INPUT","gg");
-
-        }
-        if(server_output != null)
-        {
-            Log.d("Server_OUTPUT","gg");
-        }
     }
 
 
     private void btnFindDevicesClicked()
     {
-
+        // Show the dialog and begin device discovery
         builderSingle.show();
-
         btAdapter.startDiscovery();
-
-
-
-
-
-
     }
 
     @Override
