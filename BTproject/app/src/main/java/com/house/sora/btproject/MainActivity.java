@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
             String charr = String.valueOf(txtDataToSend.getText());
             try {
                 writer.write(charr);
+                writer.flush();
                 Log.d("Client_OUTPUT","data send:"+charr);
             } catch (IOException e) {
                 e.printStackTrace();

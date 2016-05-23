@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 /**
@@ -14,12 +15,12 @@ public class readIncomingData_ASYNC extends Thread
 {
     private static final String TAG = "readIncomingData_ASync";
     private BluetoothSocket btSocket;
-    private InputStreamReader reader;
+    private InputStream reader;
     private StringBuilder builder;
     public readIncomingData_ASYNC(BluetoothSocket btSocket)
     {
         this.btSocket = btSocket;
-        try { reader = new InputStreamReader(btSocket.getInputStream());}
+        try { reader = btSocket.getInputStream();}
         catch (IOException e) { e.printStackTrace();}
         builder = new StringBuilder();
         Log.d(TAG,"In constructor");
@@ -33,12 +34,15 @@ public class readIncomingData_ASYNC extends Thread
         {
             try
             {
-                char character;
-                while((character = (char) reader.read()) != -1)
-                {
-                    builder.append(character);
-                    Log.d(TAG,"Reading...");
-                }
+                int ch = -999;
+                Log.d(TAG,"Preparing to start reading...");
+
+                if(reader.available()>0) ch = (char) reader.read();
+                else Log.d(TAG,"umfal");
+                Log.d(TAG,"PreReading...");
+                builder.append((char)ch);
+                Log.d(TAG,"Reading...");
+
             }
             catch (IOException e) { e.printStackTrace();}
             Log.d(TAG,"Done Reading...");

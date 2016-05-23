@@ -16,6 +16,7 @@ import java.util.UUID;
  */
 public class BluetoothAsClient extends Thread {
     private static final String MY_UUID = "f49beda8-1f8b-11e6-b6ba-3e1d05defe78";
+    private static final String TAG = "BluetoothAsClient";
     private static  BluetoothSocket mmSocket;
     private final BluetoothDevice mmDevice;
     private BluetoothAdapter mBluetoothAdapter;
@@ -45,13 +46,12 @@ public class BluetoothAsClient extends Thread {
             // Connect the device through the socket. This will block
             // until it succeeds or throws an exception
             mmSocket.connect();
+            Log.d(TAG,"Connection established");
         }
         catch (IOException connectException)
         {
             // Unable to connect; close the socket and get out
-            try {
-                mmSocket.close();
-            } catch (IOException closeException) { }
+            try {mmSocket.close();} catch (IOException closeException) { }
             return;
         }
 
@@ -62,7 +62,7 @@ public class BluetoothAsClient extends Thread {
     private void manageConnection(BluetoothSocket mmSocket)
     {
         BluetoothDevice device =  mmSocket.getRemoteDevice();
-        Log.d("DEBUG",device.getName());
+        Log.d(TAG,"Connected to : "+device.getName());
 
         MainActivity.startIncoming(mmSocket);
 
