@@ -108,18 +108,6 @@ public class MainActivity extends AppCompatActivity {
         if(client_input != null)
         {
             Log.d("Client_INPUT","gg");
-            InputStreamReader reader = new InputStreamReader(client_input);
-            StringBuilder builder = null;
-
-            try
-            {
-                while(builder.append(reader.read())!=null);
-                Log.d("Client_INPUT","Reading done");
-                Log.d("DataRead",builder.toString());
-            }
-            catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         if(client_output != null )
         {
@@ -128,8 +116,7 @@ public class MainActivity extends AppCompatActivity {
             String charr = String.valueOf(txtDataToSend.getText());
             try {
                 writer.write(charr);
-                writer.flush();
-                Log.d("Client_OUTPUT","data send");
+                Log.d("Client_OUTPUT","data send:"+charr);
             } catch (IOException e) {
                 e.printStackTrace();
             }
