@@ -10,7 +10,7 @@ import java.io.InputStreamReader;
 /**
  * Created by SoRa on 23/5/2016.
  */
-public class readIncomingData_ASYNC extends AsyncTask
+public class readIncomingData_ASYNC extends Thread
 {
     private static final String TAG = "readIncomingData_ASync";
     private BluetoothSocket btSocket;
@@ -19,19 +19,17 @@ public class readIncomingData_ASYNC extends AsyncTask
     public readIncomingData_ASYNC(BluetoothSocket btSocket)
     {
         this.btSocket = btSocket;
-    }
-
-    @Override
-    protected void onPreExecute() {
-        super.onPreExecute();
         try { reader = new InputStreamReader(btSocket.getInputStream());}
         catch (IOException e) { e.printStackTrace();}
+        builder = new StringBuilder();
+        Log.d(TAG,"In constructor");
     }
 
-    @Override
-    protected Object doInBackground(Object[] params)
+
+    public void run()
     {
-        while(btSocket.isConnected())
+        Log.d(TAG,"Starting the procedure");
+        if(btSocket.isConnected())
         {
             try
             {
@@ -46,12 +44,9 @@ public class readIncomingData_ASYNC extends AsyncTask
             Log.d(TAG,"Done Reading...");
             Log.d(TAG,"Read:"+builder.toString());
         }
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(Object o) {
-        super.onPostExecute(o);
+        else  Log.d(TAG,"Disconnected");
 
     }
+
+
 }

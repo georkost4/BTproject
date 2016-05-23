@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 import com.house.sora.btproject.ASYNC_TASKS.readIncomingData_ASYNC;
+import com.house.sora.btproject.MainActivity;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -63,7 +64,7 @@ public class BluetoothAsClient extends Thread {
         BluetoothDevice device =  mmSocket.getRemoteDevice();
         Log.d("DEBUG",device.getName());
 
-        new readIncomingData_ASYNC(mmSocket).execute();
+        MainActivity.startIncoming(mmSocket);
 
     }
 

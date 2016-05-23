@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.house.sora.btproject.ASYNC_TASKS.readIncomingData_ASYNC;
 import com.house.sora.btproject.Client.BluetoothAsClient;
 import com.house.sora.btproject.Client.IO_Stream_Controller_Client;
 import com.house.sora.btproject.Server.BluetoothAsServer;
@@ -225,5 +226,9 @@ public class MainActivity extends AppCompatActivity {
         // Register the BroadcastReceiver
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter); // Don't forget to unregister during onDestroy
+    }
+
+    public static void startIncoming(BluetoothSocket mmSocket) {
+        new readIncomingData_ASYNC(mmSocket).start();
     }
 }
