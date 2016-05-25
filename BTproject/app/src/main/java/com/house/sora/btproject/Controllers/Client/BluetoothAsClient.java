@@ -1,12 +1,14 @@
-package com.house.sora.btproject.Client;
+package com.house.sora.btproject.Controllers.Client;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
-import com.house.sora.btproject.ASYNC_TASKS.readIncomingData_ASYNC;
-import com.house.sora.btproject.MainActivity;
+import com.house.sora.btproject.Util.Constants;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -15,14 +17,18 @@ import java.util.UUID;
  * Created by SoRa on 21/5/2016.
  */
 public class BluetoothAsClient extends Thread {
-    private static final String MY_UUID = "f49beda8-1f8b-11e6-b6ba-3e1d05defe78";
-    private static final String TAG = "BluetoothAsClient";
+
+    public static final String TAG = "BluetoothAsClient";
     private static  BluetoothSocket mmSocket;
     private final BluetoothDevice mmDevice;
     private BluetoothAdapter mBluetoothAdapter;
+    private Handler mHandler;
 
 
-    public BluetoothAsClient(BluetoothDevice device) {
+
+    public BluetoothAsClient(BluetoothDevice device,Handler mHandler)
+    {
+        this.mHandler = mHandler;
         // Use a temporary object that is later assigned to mmSocket,
         // because mmSocket is final
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -33,7 +39,7 @@ public class BluetoothAsClient extends Thread {
         // Get a BluetoothSocket to connect with the given BluetoothDevice
         try {
             // MY_UUID is the app's UUID string, also used by the server code
-            tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(MY_UUID));
+            tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.MY_UUID));
         } catch (IOException e) { }
         mmSocket = tmp;
     }
@@ -42,10 +48,16 @@ public class BluetoothAsClient extends Thread {
         // Cancel discovery because it will slow down the connection
         mBluetoothAdapter.cancelDiscovery();
 
-        try {
+        try
+        {
             // Connect the device through the socket. This will block
             // until it succeeds or throws an exception
             mmSocket.connect();
+            Bundle b = new Bundle();
+            b.putInt(Constants.WHAT,Constants.CONNECTION_ESTABLISHED_AS_CLIENT);
+            Message msg = new Message();
+            msg.setData(b);
+            mHandler.sendMessage(msg);
             Log.d(TAG,"Connection established");
         }
         catch (IOException connectException)
@@ -61,11 +73,8 @@ public class BluetoothAsClient extends Thread {
 
     private void manageConnection(BluetoothSocket mmSocket)
     {
-        BluetoothDevice device =  mmSocket.getRemoteDevice();
-        Log.d(TAG,"Connected to : "+device.getName());
-
-        new IO_Stream_Controller_Client().readData();
-
+        IO_Stream_Controller_Client client = new IO_Stream_Controller_Client();
+        client.readData();
     }
 
     public static BluetoothSocket getSocket() {
@@ -73,7 +82,7 @@ public class BluetoothAsClient extends Thread {
     }
 
     /** Will cancel an in-progress connection, and close the socket */
-    public void cancel() {
+    public static void cancel() {
         try {
             mmSocket.close();
         } catch (IOException e) { }

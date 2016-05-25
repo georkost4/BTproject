@@ -1,27 +1,29 @@
-package com.house.sora.btproject.Server;
+package com.house.sora.btproject.Controllers.Server;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
-import com.house.sora.btproject.Client.IO_Stream_Controller_Client;
+import com.house.sora.btproject.Util.Constants;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.UUID;
 
 public class BluetoothAsServer extends Thread 
 {
-
-    private static final String NAME = "BTproject";
-    private static final String MY_UUID = "f49beda8-1f8b-11e6-b6ba-3e1d05defe78";
+    private static final String TAG = "BluetoothAsServer";
     private final BluetoothServerSocket mmServerSocket;
     private  BluetoothAdapter mBluetoothAdapter;
     private static BluetoothSocket socket = null;
+    private Handler mHandler;
 
-    public BluetoothAsServer()
+    public BluetoothAsServer(Handler mHandler)
     {
+        this.mHandler = mHandler;
         // Use a temporary object that is later assigned to mmServerSocket,
         // because mmServerSocket is final
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -29,7 +31,7 @@ public class BluetoothAsServer extends Thread
         try
         {
             // MY_UUID is the app's UUID string, also used by the client code
-            tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(NAME, UUID.fromString(MY_UUID));
+            tmp = mBluetoothAdapter.listenUsingRfcommWithServiceRecord(Constants.NAME, UUID.fromString(Constants.MY_UUID));
         }
         catch (IOException e) { }
         mmServerSocket = tmp;
@@ -44,6 +46,12 @@ public class BluetoothAsServer extends Thread
             try
             {
                 socket = mmServerSocket.accept();
+                Bundle b = new Bundle();
+                b.putInt(Constants.WHAT,Constants.CONNECTION_ESTABLISHED_AS_SERVER);
+                Message msg = new Message();
+                msg.setData(b);
+                mHandler.sendMessage(msg);
+                Log.d(TAG,"Connection as Server Established");
             }
             catch (IOException e) {break;  }
             // If a connection was accepted
@@ -63,8 +71,9 @@ public class BluetoothAsServer extends Thread
 
     private void manageConnectedSocket(BluetoothSocket socket)
     {
-        Log.d("DEBUG","manageConnectedSOCKET_SERVER");
-        new IO_Stream_Controller_Client().readData();
+        // Create stream controller object and call read method
+        // to start reading in a separate thread
+       new IO_Stream_Controller_Server().readData();
     }
 
     public static  BluetoothSocket getSocket() {

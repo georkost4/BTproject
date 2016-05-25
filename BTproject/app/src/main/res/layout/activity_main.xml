@@ -15,16 +15,17 @@
         android:layout_height="wrap_content"
         android:id="@+id/txtDataToSend"
         android:hint="Enter text to Send"
-        android:layout_marginTop="46dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Find Devices"
         android:id="@+id/btnFind"
-        android:layout_centerVertical="true"
+        android:layout_alignBaseline="@+id/txtDataToSend"
+        android:layout_alignBottom="@+id/txtDataToSend"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 
@@ -33,16 +34,60 @@
         android:layout_height="wrap_content"
         android:text="Send Data"
         android:id="@+id/btnSend"
-        android:layout_alignTop="@+id/btnCheckConnectivity"
-        android:layout_toRightOf="@+id/txtDataToSend"
-        android:layout_toEndOf="@+id/txtDataToSend" />
+        android:layout_below="@+id/txtDataToSend"
+        android:layout_alignLeft="@+id/btnDisconnect"
+        android:layout_alignStart="@+id/btnDisconnect" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Check"
         android:id="@+id/btnCheckConnectivity"
-        android:layout_alignTop="@+id/btnFind"
+        android:layout_marginTop="91dp"
+        android:layout_below="@+id/btnFind"
         android:layout_centerHorizontal="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Disconnect"
+        android:id="@+id/btnDisconnect"
+        android:layout_alignTop="@+id/btnCheckConnectivity"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Visible"
+        android:id="@+id/btnGetVisible"
+        android:layout_alignTop="@+id/btnCheckConnectivity"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@+id/btnConnect"
+        android:layout_alignEnd="@+id/btnConnect" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect"
+        android:id="@+id/btnConnect"
+        android:layout_above="@+id/btnGetVisible"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Nothi"
+        android:id="@+id/txtDataReceived"
+        android:layout_below="@+id/btnCheckConnectivity"
+        android:layout_marginTop="76dp"
+        android:layout_alignRight="@+id/txtDataToSend"
+        android:layout_alignEnd="@+id/txtDataToSend"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>
