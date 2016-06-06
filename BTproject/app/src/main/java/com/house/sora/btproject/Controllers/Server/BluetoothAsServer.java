@@ -46,8 +46,13 @@ public class BluetoothAsServer extends Thread
             try
             {
                 socket = mmServerSocket.accept();
+
+                // Send messsage that a connection is
+                // accepted also send the device name
+                String device_name = socket.getRemoteDevice().getName();
                 Bundle b = new Bundle();
                 b.putInt(Constants.WHAT,Constants.CONNECTION_ESTABLISHED_AS_SERVER);
+                b.putString(Constants.CONNECTED_TO,device_name);
                 Message msg = new Message();
                 msg.setData(b);
                 mHandler.sendMessage(msg);
@@ -85,7 +90,8 @@ public class BluetoothAsServer extends Thread
         try
         {
             mmServerSocket.close();
+            Log.e(TAG,"Server socket closing...");
         }
-        catch (IOException e) { }
+        catch (IOException e) {e.printStackTrace(); Log.e(TAG,"Server socket error closing."); }
     }
 }

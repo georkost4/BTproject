@@ -40,6 +40,7 @@ public class BluetoothAsClient extends Thread {
         try {
             // MY_UUID is the app's UUID string, also used by the server code
             tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.MY_UUID));
+            Log.d(TAG,"trying socket");
         } catch (IOException e) { }
         mmSocket = tmp;
     }
@@ -52,9 +53,15 @@ public class BluetoothAsClient extends Thread {
         {
             // Connect the device through the socket. This will block
             // until it succeeds or throws an exception
+            Log.d(TAG,"connect....");
             mmSocket.connect();
+
+            // Send message to UI thread that
+            // a connection is successfull
+            // also the name of the device connected to
             Bundle b = new Bundle();
             b.putInt(Constants.WHAT,Constants.CONNECTION_ESTABLISHED_AS_CLIENT);
+            b.putString(Constants.CONNECTED_TO,mmDevice.getName());
             Message msg = new Message();
             msg.setData(b);
             mHandler.sendMessage(msg);
@@ -62,6 +69,13 @@ public class BluetoothAsClient extends Thread {
         }
         catch (IOException connectException)
         {
+            connectException.printStackTrace();
+            Log.e(TAG,"Could not connect");
+            Bundle b = new Bundle();
+            b.putInt(Constants.WHAT,Constants.FAILED_TO_CONNECT);
+            Message msg = new Message();
+            msg.setData(b);
+            mHandler.sendMessage(msg);
             // Unable to connect; close the socket and get out
             try {mmSocket.close();} catch (IOException closeException) { }
             return;

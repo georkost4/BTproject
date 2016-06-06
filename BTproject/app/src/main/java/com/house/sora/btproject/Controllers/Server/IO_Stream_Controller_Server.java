@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 
-import com.house.sora.btproject.MainActivity;
+import com.house.sora.btproject.View.MainActivity;
 import com.house.sora.btproject.Util.Constants;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ public class IO_Stream_Controller_Server {
         {
             socket = BluetoothAsServer.getSocket();
         }
-        else Log.e(TAG,"Empty Socket.");
+        else Log.e(TAG,"Server Empty Socket.");
     }
 
 
@@ -41,10 +41,11 @@ public class IO_Stream_Controller_Server {
             catch (IOException e)
             {
                 e.printStackTrace();
-                Log.e(TAG,"Could not get scoket outputstream.");
+                Log.e(TAG,"Could not get server scoket outputstream.");
             }
 
             // Got the outputStream now send data
+            s+='\u0000'; // Add NULL char to  define END OF MESSAGE
             byte [] msg = s.getBytes();
             try
             {
@@ -74,31 +75,60 @@ public class IO_Stream_Controller_Server {
                     try
                     {
                         char ch;
-                        StringBuilder builder = new StringBuilder();
-                        while((ch = (char) socket.getInputStream().read()) !='9')
+                        StringBuilder message = new StringBuilder();
+                        while((ch = (char) socket.getInputStream().read()) !='\u0000') // Read until end of message then Update UI
                         {
-                            builder.append(ch);
-                            Message msg = new Message();
-                            Bundle b = new Bundle();
-                            b.putChar(Constants.CHAR,ch);
-                            b.putInt(Constants.WHAT,Constants.DO_UPDATE_TEXT);
-                            Log.d(TAG, String.valueOf(ch));
-                            msg.setData(b);
-                            MainActivity.myHandler.sendMessage(msg);
-                        }
+                            message.append(ch);
 
-                        Log.d(TAG,"ReceivedAs_Client:"+builder.toString());
+                        }
+                        // update the UI thread
+                        sendMessageToUIThread(Constants.DO_UPDATE_TEXT, message);
+
+                        Log.d(TAG,"ReceivedAs_Client:"+ message.toString());
                     }
                     catch (IOException e)
                     {
                         e.printStackTrace();
                         Log.e(TAG,"Error in reading method. _SERVER");
+
+                        //Send error message in Main Thread
+                        sendMessageToUIThread(Constants.CONNECTION_LOST, null);
+                        // Exit the thread
+                        break;
                     }
                 }
             }
         };
         Thread thread = new Thread(r);
         thread.start();
+    }
+
+    private void sendMessageToUIThread(int what, StringBuilder message) {
+        Message msg = new Message();
+        Bundle b = new Bundle();
+
+        switch (what)
+        {
+            case Constants.DO_UPDATE_TEXT:
+            {
+                // put the message inside the bundle
+                // put the message code inside the bundle
+                b.putString(Constants.CHAR, message.toString());
+                b.putInt(Constants.WHAT,Constants.DO_UPDATE_TEXT);
+                msg.setData(b);
+                break;
+            }
+            case Constants.CONNECTION_LOST:
+            {
+                // put the message code inside the bundle
+                b.putInt(Constants.WHAT,Constants.CONNECTION_LOST);
+                Log.e(TAG, "--IO_STREAM_SERVER");
+                Log.e(TAG, "Sending error message to UI thread...");
+                msg.setData(b);
+                break;
+            }
+        }
+        MainActivity.myHandler.sendMessage(msg);
     }
 
 
