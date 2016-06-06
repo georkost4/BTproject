@@ -1,2 +1,2 @@
 # BTproject
-Bluetooth Serial communication with arduino over bluetooth module HC-05
+Simple bluetooth chat application for android.
