@@ -79,6 +79,7 @@ public class IO_Stream_Controller_Server {
                         while((ch = (char) socket.getInputStream().read()) !='\u0000') // Read until end of message then Update UI
                         {
                             message.append(ch);
+                            Log.d(TAG,"Received:"+ch);
 
                         }
                         // update the UI thread

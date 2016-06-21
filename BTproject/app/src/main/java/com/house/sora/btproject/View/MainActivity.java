@@ -53,7 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
         initialize();
         setUpBluetooth();
-        startListeningForConnectionsAsServer();
+
+
 
 
         Log.e(TAG,"----On  Create------");
@@ -196,6 +197,7 @@ public class MainActivity extends AppCompatActivity {
                 if(resultCode == RESULT_OK)
                 {
                     Log.d(TAG,"Bluetooth enabled");
+                    startListeningForConnectionsAsServer();
                 }
                 break;
             case Constants.REQUEST_DISCOVERABILITY_BT:
