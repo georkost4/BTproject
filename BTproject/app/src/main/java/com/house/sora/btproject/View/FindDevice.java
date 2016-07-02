@@ -47,8 +47,6 @@ public class FindDevice extends AppCompatActivity
         init();
         registerReceivers();
         fillPairedDevicesListView();
-
-
     }
 
     private void fillPairedDevicesListView() {
@@ -98,7 +96,19 @@ public class FindDevice extends AppCompatActivity
 
     }
 
-    private void btnSearchDevicesClicked(View v) {  btAdapter.startDiscovery();   } // Start discovering servicce to find new device
+    private void btnSearchDevicesClicked(View v)
+    {
+        // Check if bluetooth is enabled
+        if (btAdapter.isEnabled()) {
+            // Start discovering servicce to find new device
+            btAdapter.startDiscovery();
+        }
+        else
+        {
+            // Display error message
+            Toast.makeText(getApplicationContext(),"Enable bluetooth to start searching",Toast.LENGTH_SHORT).show();
+        }
+    }
 
 
     private void registerReceivers()
@@ -163,7 +173,6 @@ public class FindDevice extends AppCompatActivity
         registerReceiver(mReceiver2, filter2); // Don't forget to unregister during onDestroy
 
     }
-
 
 
 

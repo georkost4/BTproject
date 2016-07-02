@@ -52,11 +52,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initialize();
+
         setUpBluetooth();
-
-
-
-
         Log.e(TAG,"----On  Create------");
     }
 
@@ -65,9 +62,8 @@ public class MainActivity extends AppCompatActivity {
         bluetoothAsServer.start();
     }
 
-    private void setUpBluetooth()
+    public void setUpBluetooth()
     {
-        btAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if(btAdapter != null)
         {
@@ -83,10 +79,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void initialize() {
         setTitle("Main Panel");
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
         btnFindDevices = (Button) findViewById(R.id.btnFind);
         btnFindDevices.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) { startActivityForResult(new Intent(MainActivity.this, FindDevice.class),Constants.FIND_DEVICE_REQUEST);      }
+            public void onClick(View v) { btnFindDevicesClicked(new Intent(MainActivity.this, FindDevice.class), Constants.FIND_DEVICE_REQUEST);}
         });
         btnSendData = (Button) findViewById(R.id.btnSend);
         btnSendData.setOnClickListener(new View.OnClickListener() {
@@ -112,6 +109,18 @@ public class MainActivity extends AppCompatActivity {
         chatListView = (ListView) findViewById(R.id.listViewChat);
         chatListView.setAdapter(customAdapter);
         myHandler =  new chatMessageHandler(MainActivity.this);
+    }
+
+    private void btnFindDevicesClicked(Intent intent, int findDeviceRequest)
+    {
+        // Check for bluetooth if enabled before continuing
+        if (btAdapter.isEnabled()) startActivityForResult(intent, findDeviceRequest);
+        // Else display error until bluetooth is enabled
+        else
+        {
+            Toast.makeText(getApplicationContext(), "Enable Bluetooth to continue", Toast.LENGTH_SHORT).show();
+            setUpBluetooth();
+        }
     }
 
     public synchronized void doUpdateChatListView(Message msg)
@@ -149,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
                 }
                 case Constants.CONNECTION_ESTABLISHED_AS_SERVER:
                 {
-
                     String str = String.valueOf(BluetoothAsServer.getSocket().isConnected());
                     Toast.makeText(this, str, Toast.LENGTH_LONG).show();
                     break;
@@ -198,6 +206,11 @@ public class MainActivity extends AppCompatActivity {
                 {
                     Log.d(TAG,"Bluetooth enabled");
                     startListeningForConnectionsAsServer();
+                }
+                else
+                {
+                    //Show error message and exit the application
+                    Toast.makeText(getApplicationContext(),"You must enable bluetooth to continue",Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Constants.REQUEST_DISCOVERABILITY_BT:
